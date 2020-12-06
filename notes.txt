@@ -1,0 +1,28 @@
+JavaScript originally was never designed with any common libraries.
+If you look at standard programming languages like C, C++, Java, and so on, they all have standard libraries that enable you to access the underlying hardware.
+And also provide a structured way of organization the application into multiple files and then combining them together when you create an application.
+Now, unlike traditional programming languages, JavaScript never had a way of distributing the code into multiple files and then combining them together.
+So this is where the CommonJS API came in to fill in this gap that fills in the needs for some common application.
+CommonJS format defines a module format that can be used for breaking up your JavaScript application into multiple files.
+And Node adopts that CommonJS format for organizing our JavaScript application into multiple files.
+Within JavaScript, with the CommonJS format, each file becomes its own Node module.
+
+
+So the file or the JavaScript file defines the boundary for a Node module.
+So within that file, the CommonJS specification provides a variable called the module variable which is a JavaScript object.
+This gives you access to the current module definition within a file.
+On this module object, you have the module.exports property which determines the export from the current module.
+So when you assign something to the module.exports property, then that becomes the exported value from the current module.
+when this module is imported into another file of our Node application, then whatever is exported from this module becomes available in the second application.
+The require function is used to import a Node module that is defined in other file into the current file so that it can be used within our node application.
+
+Node modules can be of three categories.
+
+We have file-based Node modules where we define the Node module within a file, within our application and we make use of it within our application.
+Then, we have core modules that are already part of Node.The Node designers kept these core modules intentionally small so that Node can be kept small.The core modules include path, file system, os, util and a few others.
+Then we have external Node modules.These are third-party Node modules that are developed by Node developers, and then made available through the Node ecosystem.So these external Node modules can be install within our system using NPM.
+
+If the Node doesn't find the external module within the node_modules folder in the current folder, it will go up to the next higher level folder looking for that Node module.
+If it is unable to find the Node module up the hierarchy, then it'll obviously raise an error saying that the Node module is missing.
+
+exports itself is also a shortened version of module.exports .

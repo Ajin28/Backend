@@ -1,14 +1,22 @@
 const express = require('express')
 const http = require('http');
+const morgan = require("morgan") //Dexter morgan bitch
 
 const hostname = "localhost"
 const port = 3000
 
 const app = express();
 
-// this function takes three parameters req, which is the request; res, which is the response, and next. Now, as we saw Express uses additional middleware. So, the next is used when you need to invoke additional middleware to take care of work on your behalf
+// HTTP request logger middleware for node.js
+app.use(morgan('dev'))
+
+//This is a built-in middleware function in Express. It serves static files.
+// __dirname gives absolute path of cwd
+// if we just say localhost:3000 by default, it'll serve up the index.html file.
+app.use(express.static(__dirname + '/public'))
+
+// This function takes three parameters req, which is the request; res, which is the response, and next. Now, as we saw Express uses additional middleware. So, the next is used when you need to invoke additional middleware to take care of work on your behalf
 app.use((req, res, next) => {
-    console.log(req.headers)
     res.statusCode = 200;
     res.setHeader("Content-Type", 'text/html')
     res.end("<html><body><h1>This is an express server </h1></body></html>")

@@ -8,17 +8,23 @@ const port = 3000
 
 const app = express();
 app.use(morgan('dev'))
+// this allows us to parse the body of the request message, which is formatted in JSON format.
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'))
 
 
 
+// So when we say app.all, no matter which method is invoked, get, put, post, or delete, for the /dishes REST API endpoint, this code will be executed first by default here.
 app.all('/dishes', (req, res, next) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain')
     next();
+    //So when you call next, what it means is that it'll continue on to look for additional specifications down below here, which will match this dishes endpoint.
+    // If we modify res and req here, then when you call the next, the modified object will be passed.
 })
 
+//if we get a get request on dishes, first app.all will be executed, and then the req and res will be passed on to this second call app.get.
+// So in this case, I will no longer need the next, because I'm not going to call further down
 app.get('/dishes', (req, res, next) => {
     res.end('Will send all the dishes to you!');
 });

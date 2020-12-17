@@ -36,7 +36,7 @@ server.listen(port, hostname, () => {
 // })
 
 // Listen for connections.
-// A node http.Server is returned, with this application (which is a Function) as its callback. If you wish to create both an HTTP and HTTPS server you may do so with the "http" and "https" modules as shown here:
+//The app.listen() method returns an http.Server object 
 // This method is identical to Node’s http.Server.listen().
 
 // var http = require('http')

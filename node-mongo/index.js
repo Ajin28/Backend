@@ -1,6 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require("assert");
 //The assert module enables us to use the assert to check for truth or false values within our application
+const dboper = require("./operations")
 
 const url = 'mongodb://localhost:27017/';
 const dbname = "conFusion";
@@ -14,26 +15,27 @@ MongoClient.connect(url, (err, client) => {
     assert.strictEqual(err, null)
     console.log("Connected correctly to server")
     const db = client.db(dbname);
-    const collection = db.collection("dishes")
-    collection.insertOne({ "name": "pizza", "description": "yummmy" }, (err, result) => {
 
-        assert.strictEqual(err, null)
+    dboper.insertDocument(db, { name: "Vadonut", description: "Test" }, 'dishes', (result) => {
+        console.log('Insert Documet:\n', result.ops);
 
-        console.log("After Insert:\n")
-        console.log(result.ops)
-        //This result will also provide this OPS property which says how many operations have just been carried out successfully.
+        dboper.findDocument(db, 'dishes', (docs) => {
+            console.log("Found Documents:\n", docs);
 
-        collection.find({}).toArray((err, docs) => {
-            assert.strictEqual(err, null)
-            console.log("Found:\n")
-            console.log(docs);
+            dboper.updateDocument(db, { name: "Vadonut" }, { description: "Updated Test" }, 'dishes', (result) => {
+                console.log('Updated Document:\n', result.result);
 
-            db.dropCollection("dishes", (err, result) => {
-                assert.strictEqual(err, null)
-                client.close();
+                dboper.findDocument(db, 'dishes', (docs) => {
+                    console.log("Found Updated Documents:\n", docs);
+
+                    db.dropCollection('dishes', (result) => {
+                        console.log("Dropped Collection: ", result);
+                    })
+                })
             })
         })
     })
+
 })
 
 

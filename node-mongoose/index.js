@@ -4,21 +4,36 @@ const Dishes = require('./models/dishes')
 
 const url = "mongodb://localhost:27017/conFusion"
 
-mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(url, { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
     .then((db) => {
         console.log("Connected to conFusion")
-        var newDish = Dishes({
+        Dishes.create({
             name: 'Uthappiza',
             description: "test"
         })
-
-        newDish.save()
+            //  This second flag that we are supplying here, new colon equal to true, means that once the update of the dish is complete, then this will return the dish, updated dish back to us
             .then((dish) => {
                 console.log(dish);
-                return Dishes.find({}).exec();
+                return Dishes.findByIdAndUpdate(dish._id,
+                    {
+                        $set: { description: "Updated test" }
+                    },
+                    {
+                        new: true
+                    }).exec();
             })
-            .then((dishes) => {
-                console.log(dishes);
+            .then((dish) => {
+                console.log(dish);
+                dish.comments.push({
+                    rating: 5,
+                    comment: "i like it",
+                    author: 'Ajin28'
+                })
+
+                return dish.save()
+            })
+            .then((dish) => {
+                console.log(dish);
                 return Dishes.deleteMany({})
             })
             .then(() => {

@@ -74,3 +74,8 @@ module.exports = mongoose.model("dish", dishSchema)
 // The min and max field specify the minimum and maximum value of that field of type Number
 
 //  So that Mongoose currency module adds a new type called as the currency type, which enables us to store a currency value.
+
+// When you call mongoose.model() on a schema, Mongoose compiles a model for you.
+// The first argument is the singular name of the collection your model is for. Mongoose automatically looks for the plural, lowercased version of your model name. Thus, for the example above, the model dish is for the dishes collection in the database.
+
+

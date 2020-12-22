@@ -33,6 +33,29 @@ The challenge and response flow works like this:
 # step 3
 
 <img src='step3.png'>
+<hr>
+
+## Intro
+
+In the context of an HTTP transaction, basic access authentication is a method for an HTTP user agent (e.g. a web browser) to provide a user name and password when making a request. In basic HTTP authentication, a request contains a header field in the form of Authorization: Basic <credentials>, where credentials is the Base64 encoding of ID and password joined by a single colon.
+
+It is specified in RFC 7617 from 2015.
+
+## Features
+
+HTTP Basic authentication (BA) implementation is the simplest technique for enforcing access controls to web resources because it does not require cookies, session identifiers, or login pages; rather, HTTP Basic authentication uses standard fields in the HTTP header.
+
+## Security
+
+The BA mechanism does not provide confidentiality protection for the transmitted credentials. They are merely encoded with Base64 in transit and not encrypted or hashed in any way. Therefore, basic authentication is typically used in conjunction with HTTPS to provide confidentiality.
+
+Because the BA field has to be sent in the header of each HTTP request, the web browser needs to cache credentials for a reasonable period of time to avoid constantly prompting the user for their username and password. Caching policy differs between browsers.
+
+HTTP does not provide a method for a web server to instruct the client to "log out" the user. However, there are a number of methods to clear cached credentials in certain web browsers. One of them is redirecting the user to a URL on the same domain, using credentials that are intentionally incorrect. However, this behavior is inconsistent between various browsers and browser versions. Microsoft Internet Explorer offers a dedicated JavaScript method to clear cached credentials.
+
+`<script>document.execCommand('ClearAuthenticationCache');</script>`
+
+In modern browsers, cached credentials for basic authentication are typically cleared when clearing browsing history. Most browsers allow users to specifically clear only credentials, though the option may be hard to find, and typically clears credentials for all visited sites.
 
 # Protocol
 
@@ -65,3 +88,5 @@ The Authorization field is constructed as follows:
    For example, if the browser uses Aladdin as the username and OpenSesame as the password, then the field's value is the Base64 encoding of Aladdin:OpenSesame, or QWxhZGRpbjpPcGVuU2VzYW1l. Then the Authorization header will appear as:
 
    Authorization: Basic QWxhZGRpbjpPcGVuU2VzYW1l
+
+[Read also at wikipedia](https://en.wikipedia.org/wiki/Basic_access_authentication)

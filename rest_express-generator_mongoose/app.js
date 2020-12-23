@@ -15,8 +15,8 @@ const Dishes = require('./models/dishes');
 const { use } = require('./routes/index');
 const url = "mongodb://localhost:27017/conFusion"
 mongoose.connect(url, { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true })
-  .then((db) => { console.log("Connected to conFusion"); })
-  .catch((err) => { console.log(err); })
+	.then((db) => { console.log("Connected to conFusion"); })
+	.catch((err) => { console.log(err); })
 
 var app = express();
 // view engine setup
@@ -26,35 +26,51 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// Since we are using signed cookies we need to pass in a secret
+// It doesn't have to be anything meaningful, it's just a key that can be used by our cookie-parser in order to encrypt the information and sign the cookie that is sent from the server to the client.
+app.use(cookieParser("ajin"));
 app.use(auth);
 // Now, we want to do authentication right before we allow the client to be able to fetch data from our server.
 // So by doing this, what we are specifying is the default, the client can access any of these, either the static resources in the public folder, or any of the resources, dishes, promotions, or leaders, or even users as we will see later on.
 // The client has to be first authorized.
 function auth(req, res, next) {
-  console.log(req.headers);
-  var authHeader = req.headers.authorization;
-  if (!authHeader) {
-    var err = new Error('You are not authenticated')
-    res.setHeader('WWW-Authenticate', 'Basic')
-    err.status = 401;
-    next(err)
-  }
+	console.log(req.signedCookies);
+	if (!req.signedCookies.user) {
+		var authHeader = req.headers.authorization;
+		if (!authHeader) {
+			var err = new Error('You are not authenticated')
+			res.setHeader('WWW-Authenticate', 'Basic')
+			err.status = 401;
+			next(err)
+		}
 
-  var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
-  var username = auth[0]
-  var password = auth[1]
-  console.log(username, password);
-  if (username === 'admin' && password === 'password') {
-    next();
-  }
-  else {
-    var err = new Error('You are not authenticated')
-    res.setHeader('WWW-Authenticate', 'Basic')
-    err.status = 401;
-    next(err)
-  }
+		var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+		var username = auth[0]
+		var password = auth[1]
+		console.log(username, password);
+		if (username === 'admin' && password === 'password') {
+			res.cookie('user', 'admin', { signed: true })
+			next();
+		}
+		else {
+			var err = new Error('You are not authenticated')
+			res.setHeader('WWW-Authenticate', 'Basic')
+			err.status = 401;
+			next(err)
+		}
 
+	}
+	else {
+		if (req.signedCookies.user === 'admin') {
+			next();
+		}
+		else {
+			var err = new Error('You are not authenticated')
+			res.setHeader('WWW-Authenticate', 'Basic')
+			err.status = 401;
+			next(err)
+		}
+	}
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -67,18 +83,18 @@ app.use("/leaders", leaderRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+	next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
 });
 
 

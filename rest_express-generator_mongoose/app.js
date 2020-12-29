@@ -29,6 +29,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
 app.use(session({
 	name: "session-id",
 	secret: 'ajin',
@@ -36,42 +37,29 @@ app.use(session({
 	resave: false,
 	store: new fileStore()
 }))
+//So thereby, an incoming user can access the index file at the slash and also access the users endpoint without being authenticated, but any other endpoint, the user has to be authenticated, so that is the way we set this up.
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 app.use(auth);
 // Now, we want to do authentication right before we allow the client to be able to fetch data from our server.
 // So by doing this, what we are specifying is the default, the client can access any of these, either the static resources in the public folder, or any of the resources, dishes, promotions, or leaders, or even users as we will see later on.
 // The client has to be first authorized.
 function auth(req, res, next) {
-	console.log('req.session: ', req.session);
 
 	if (!req.session.user) {
-		var authHeader = req.headers.authorization;
-		if (!authHeader) {
-			var err = new Error('You are not authenticated!');
-			res.setHeader('WWW-Authenticate', 'Basic');
-			err.status = 401;
-			next(err);
-			return;
-		}
-		var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-		var user = auth[0];
-		var pass = auth[1];
-		if (user == 'admin' && pass == 'password') {
-			req.session.user = 'admin';
-			next(); // authorized
-		} else {
-			var err = new Error('You are not authenticated!');
-			res.setHeader('WWW-Authenticate', 'Basic');
-			err.status = 401;
-			next(err);
-		}
+		var err = new Error('You are not authenticated!');
+		res.setHeader('WWW-Authenticate', 'Basic');
+		err.status = 401;
+		return next(err);
+
 	}
 	else {
-		if (req.session.user === 'admin') {
+		if (req.session.user === 'authenticated') {
 			next();
 		}
 		else {
 			var err = new Error('You are not authenticated!');
-			err.status = 401;
+			err.status = 403;//Forbidden
 			next(err);
 		}
 	}
@@ -80,8 +68,6 @@ function auth(req, res, next) {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use("/dishes", dishRouter)
 app.use("/promotions", promoRouter)
 app.use("/leaders", leaderRouter)

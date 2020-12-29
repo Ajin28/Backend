@@ -3,7 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -26,52 +28,55 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// Since we are using signed cookies we need to pass in a secret
-// It doesn't have to be anything meaningful, it's just a key that can be used by our cookie-parser in order to encrypt the information and sign the cookie that is sent from the server to the client.
-app.use(cookieParser("ajin"));
+
+app.use(session({
+	name: "session-id",
+	secret: 'ajin',
+	saveUninitialized: false,
+	resave: false,
+	store: new fileStore()
+}))
 app.use(auth);
 // Now, we want to do authentication right before we allow the client to be able to fetch data from our server.
 // So by doing this, what we are specifying is the default, the client can access any of these, either the static resources in the public folder, or any of the resources, dishes, promotions, or leaders, or even users as we will see later on.
 // The client has to be first authorized.
 function auth(req, res, next) {
-	console.log(req.signedCookies);
-	if (!req.signedCookies.user) {
+	console.log('req.session: ', req.session);
+
+	if (!req.session.user) {
 		var authHeader = req.headers.authorization;
 		if (!authHeader) {
-			var err = new Error('You are not authenticated')
-			res.setHeader('WWW-Authenticate', 'Basic')
+			var err = new Error('You are not authenticated!');
+			res.setHeader('WWW-Authenticate', 'Basic');
 			err.status = 401;
-			next(err)
+			next(err);
+			return;
 		}
-
 		var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-		var username = auth[0]
-		var password = auth[1]
-		console.log(username, password);
-		if (username === 'admin' && password === 'password') {
-			res.cookie('user', 'admin', { signed: true })
-			next();
-		}
-		else {
-			var err = new Error('You are not authenticated')
-			res.setHeader('WWW-Authenticate', 'Basic')
+		var user = auth[0];
+		var pass = auth[1];
+		if (user == 'admin' && pass == 'password') {
+			req.session.user = 'admin';
+			next(); // authorized
+		} else {
+			var err = new Error('You are not authenticated!');
+			res.setHeader('WWW-Authenticate', 'Basic');
 			err.status = 401;
-			next(err)
+			next(err);
 		}
-
 	}
 	else {
-		if (req.signedCookies.user === 'admin') {
+		if (req.session.user === 'admin') {
 			next();
 		}
 		else {
-			var err = new Error('You are not authenticated')
-			res.setHeader('WWW-Authenticate', 'Basic')
+			var err = new Error('You are not authenticated!');
 			err.status = 401;
-			next(err)
+			next(err);
 		}
 	}
 }
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 

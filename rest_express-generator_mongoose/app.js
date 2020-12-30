@@ -6,12 +6,16 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
+var passport = require('passport');
+var authenticate = require('./authenticate')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dishRouter = require("./routes/dishRouter")
 var promoRouter = require("./routes/promoRouter")
 var leaderRouter = require("./routes/leaderRouter")
+
+
 
 const Dishes = require('./models/dishes');
 const { use } = require('./routes/index');
@@ -37,6 +41,10 @@ app.use(session({
 	resave: false,
 	store: new fileStore()
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 //So thereby, an incoming user can access the index file at the slash and also access the users endpoint without being authenticated, but any other endpoint, the user has to be authenticated, so that is the way we set this up.
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -46,22 +54,14 @@ app.use(auth);
 // The client has to be first authorized.
 function auth(req, res, next) {
 
-	if (!req.session.user) {
+	if (!req.user) {
 		var err = new Error('You are not authenticated!');
-		res.setHeader('WWW-Authenticate', 'Basic');
 		err.status = 401;
 		return next(err);
 
 	}
 	else {
-		if (req.session.user === 'authenticated') {
-			next();
-		}
-		else {
-			var err = new Error('You are not authenticated!');
-			err.status = 403;//Forbidden
-			next(err);
-		}
+		next();
 	}
 }
 

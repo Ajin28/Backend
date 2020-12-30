@@ -1,22 +1,16 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema
-
+var passportLocalMongoose = require('passport-local-mongoose')
 var User = new Schema({
-    username: {
-        type: String,
-        unique: true,
-        required: true
-
-    },
-    password: {
-        type: String,
-        required: true,
-
-    },
+    //username and password added by passportLocalMongoose
     admin: {
         type: Boolean,
         default: false
     }
 });
+
+User.plugin(passportLocalMongoose);
+// So, this will automatically as I said adding support for username and hashed storage of the password using the hash and salt and adding additional methods on the user schema and the model which are useful for passport authentication.
+
 
 module.exports = mongoose.model('User', User);

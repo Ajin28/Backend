@@ -15,6 +15,12 @@ var cookieParser = require('cookie-parser')
 var app = express()
 app.use(cookieParser())
 
+app.get('/setCookie',(req,res)=>{
+  res.cookie('theme','dark')
+  res.cookie('admin','authenticated',{signed:true})
+
+})
+
 app.get('/', function (req, res) {
   // Cookies that have not been signed
   console.log('Cookies: ', req.cookies)

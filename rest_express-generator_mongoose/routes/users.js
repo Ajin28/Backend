@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const User = require('../models/user');
 var passport = require('passport')
-
+var authenticate = require('../authenticate')
 userRouter.use(bodyParser.json())
 
 /* GET users listing. */
@@ -34,10 +34,11 @@ userRouter.post('/signup', function (req, res, next) {
 // Only when authentication is suucessful the followint function will be executed.
 // If there is an error in authentication passport.authenticate will automatically send back a replay to client about the failure that occured   
 userRouter.post('/login', passport.authenticate('local'), (req, res, next) => {
+  var token = authenticate.getToken({ _id: req.user._id })
   console.log(req.user + "\n\n------\n\n" + req.session);
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json')
-  res.json({ success: true, status: 'You are successfully logged in!' })
+  res.json({ success: true, token: token, status: 'You are successfully logged in!' })
 
 
 })

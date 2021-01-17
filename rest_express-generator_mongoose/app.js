@@ -8,7 +8,7 @@ var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate')
-
+var config = require('./config')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dishRouter = require("./routes/dishRouter")
@@ -19,7 +19,7 @@ var leaderRouter = require("./routes/leaderRouter")
 
 const Dishes = require('./models/dishes');
 const { use } = require('./routes/index');
-const url = "mongodb://localhost:27017/conFusion"
+const url = config.mongoUrl;
 mongoose.connect(url, { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true })
 	.then((db) => { console.log("Connected to conFusion"); })
 	.catch((err) => { console.log(err); })
@@ -33,38 +33,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
-app.use(session({
-	name: "session-id",
-	secret: 'ajin',
-	saveUninitialized: false,
-	resave: false,
-	store: new fileStore()
-}))
-
 app.use(passport.initialize())
-app.use(passport.session())
 
-//So thereby, an incoming user can access the index file at the slash and also access the users endpoint without being authenticated, but any other endpoint, the user has to be authenticated, so that is the way we set this up.
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use(auth);
-// Now, we want to do authentication right before we allow the client to be able to fetch data from our server.
-// So by doing this, what we are specifying is the default, the client can access any of these, either the static resources in the public folder, or any of the resources, dishes, promotions, or leaders, or even users as we will see later on.
-// The client has to be first authorized.
-function auth(req, res, next) {
-
-	if (!req.user) {
-		var err = new Error('You are not authenticated!');
-		err.status = 401;
-		return next(err);
-
-	}
-	else {
-		next();
-	}
-}
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 

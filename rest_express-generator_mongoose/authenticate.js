@@ -38,6 +38,20 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 )
 
 exports.verifyUser = passport.authenticate('jwt', { session: false })
+exports.verifyAdmin = function (req, res, next) {
+    if (req.user && req.user.admin === true) {
+        next();
+    }
+    else {
+        var err = new Error('You are not authorized to perform this operation!')
+        err.status = 403
+        next(err)
+
+    }
+}
+
+
+
 
 // here there is nothing special about local keyword, it is just the name of the variable that is used to export the passport local authentication strategy configuration
 // new LocalStrategy()  this is where the functions that are supported by the passport-local-mongoose comes to our help.

@@ -60,9 +60,9 @@ app.post('/profile', function (req, res, next) {
 <table>
 <thead>
   <tr>
-    <th>no code</th>
-    <th>Now make a POST request to http://localhost:3000/ with header set to ‘content-type: application/x-www-form-urlencoded’</th>
-    <th>Now make a POST request to http://localhost:3000/ with header set to ‘content-type: application/json’</th>
+    <th>code</th>
+    <th>Now make a POST request to http://localhost:3000/ with header set to ‘content-type: application/x-www-form-urlencoded’<br>form</th>
+    <th>Now make a POST request to http://localhost:3000/ with header set to ‘content-type: application/json’<br>req.body</th>
   </tr>
 </thead>
 <tbody>
@@ -77,7 +77,7 @@ app.post('/profile', function (req, res, next) {
     <td>will give output</td>
   </tr>
   <tr>
-    <td>app.use(express.json())app.use(express.urlencoded({ extended: true }))</td>
+    <td>app.use(express.json()) <br>app.use(express.urlencoded({ extended: true }))</td>
     <td>will give output</td>
     <td>will give output</td>
   </tr>

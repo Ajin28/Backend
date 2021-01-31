@@ -58,7 +58,7 @@ userRouter.post('/signup', function (req, res, next) {
 // If there is an error in authentication passport.authenticate will automatically send back a replay to client about the failure that occured   
 userRouter.post('/login', passport.authenticate('local'), (req, res, next) => {
   var token = authenticate.getToken({ _id: req.user._id })
-  console.log(req.user + "\n\n------\n\n" + req.session);
+  //console.log(req.user + "\n\n------\n\n" + req.session);
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json')
   res.json({ success: true, token: token, status: 'You are successfully logged in!' })

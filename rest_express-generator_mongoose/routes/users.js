@@ -5,10 +5,12 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 var passport = require('passport')
 var authenticate = require('../authenticate')
+const cors = require('./cors')
+
 userRouter.use(bodyParser.json())
 
 /* GET users listing. */
-userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
+userRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
   User.find({}, (err, users) => {
     if (err) {
       next(err)
@@ -20,7 +22,9 @@ userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function 
   })
 })
 
-userRouter.post('/signup', function (req, res, next) {
+
+
+userRouter.post('/signup', cors.corsWithOptions, function (req, res, next) {
   User.register(new User({ username: req.body.username }), req.body.password, (err, user) => {
     if (err) {
       res.statusCode = 500;
@@ -56,7 +60,7 @@ userRouter.post('/signup', function (req, res, next) {
 // when the post route is executed first the passport.authenticate will be called.
 // Only when authentication is suucessful the followint function will be executed.
 // If there is an error in authentication passport.authenticate will automatically send back a replay to client about the failure that occured   
-userRouter.post('/login', passport.authenticate('local'), (req, res, next) => {
+userRouter.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res, next) => {
   var token = authenticate.getToken({ _id: req.user._id })
   //console.log(req.user + "\n\n------\n\n" + req.session);
   res.statusCode = 200;
@@ -68,7 +72,7 @@ userRouter.post('/login', passport.authenticate('local'), (req, res, next) => {
 
 //Now, the session itself provides this method called destroy and when you call the destroy method, the session is destroyed and the information is removed from the server side pertaining to this session.
 //So the clearCookie is a way of asking the client to remove the cookie and the cookie name is the session ID.
-userRouter.get('/logout', function (req, res, next) {
+userRouter.get('/logout', cors.corsWithOptions, function (req, res, next) {
   if (req.session) {
     req.session.destroy();
     res.clearCookie('session-id');

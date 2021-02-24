@@ -16,15 +16,19 @@ If you go into the file node_module/express/lib/express.js you can see under mod
 
 - You DO NOT NEED express.json() and express.urlencoded() for GET Requests or DELETE Requests.
 
-- You NEED express.json() and express.urlencoded() for POST and PUT requests, because in both these requests you are sending data (in the form of some data object) to the server and you are asking the server to accept or store that data (object), which is enclosed in the body (i.e. req.body) of that (POST or PUT) Request
+- You NEED express.json() and express.urlencoded() for POST and PUT requests, because in both these requests you are sending data (in the form of some data object) to the server and you are asking the server to accept or store that data (object), which is enclosed in the body (i.e. req.body) of that (POST or PUT) Request. Without these middleware our express server won't be able to parse the data and `req.body` will be `undefined`
 
 - Express provides you with middleware to deal with the (incoming) data (object) in the body of the request.
 
   - express.json() is a method inbuilt in express to recognize the incoming Request Object as a JSON Object. This method is called as a middleware in your application using the code:
     `app.use(express.json());`
 
+    Example - When we send data in postman in json format.
+
   - express.urlencoded() is a method inbuilt in express to recognize the incoming Request Object as strings or arrays. It parses incoming requests with urlencoded payloads and is based on body-parser.This method is called as a middleware in your application using the code:
     `app.use(express.urlencoded());`
+
+    Example data coming from `<form>` element
 
 - ALTERNATIVELY, I recommend using body-parser (it is an NPM package) to do the same thing. It is developed by the same peeps who built express and is designed to work with express. body-parser used to be part of express. Think of body-parser specifically for POST Requests (i.e. the .post request object) and/or PUT Requests (i.e. the .put request object).
 
@@ -110,10 +114,26 @@ console.log(result) // { 'person[age]': '3', 'person[name]': 'bobby' }
 
 ## qs / true
 
+```
+POSTMAN
+```
+
 <img src='true.png'>
+
+```
+FORM
+```
+
 <img src='true1.png'>
 
 ## query-string / false
 
+```
+POSTMAN
+```
+
 <img src='false.png'>
+```
+FORM
+```
 <img src='false1.png'>

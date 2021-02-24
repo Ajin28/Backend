@@ -10,6 +10,9 @@ var User = new Schema({
         type: String,
         default: ''
     },
+    facebookId: {
+        type: String
+    },
     //username and password added by passportLocalMongoose
     admin: {
         type: Boolean,

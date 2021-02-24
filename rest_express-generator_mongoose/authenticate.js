@@ -7,6 +7,41 @@ var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken')
 var config = require('./config')
 
+var FacebookTokenStrategy = require('passport-facebook-token');
+exports.facebookPassport = passport.use(new FacebookTokenStrategy(
+    {
+        clientID: config.facebook.clientId,
+        clientSecret: config.facebook.clientSecret,
+        fbGraphVersion: 'v3.0'
+    },
+    function (accessToken, refreshToken, profile, done) {
+        User.findOne({ facebookId: profile.id }, function (err, user) {
+            if (err) {
+                return done(err, false)
+            }
+            else if (!err && user !== null) {
+                return done(null, user)
+            }
+            else {
+                user = new User({ username: profile.displayName });
+                user.facebookId = profile.id;
+                user.firstname = profile.name.givenName;
+                user.lastname = profile.name.familyName;
+                user.save((err, user) => {
+                    if (err) {
+                        done(err, false)
+                    }
+                    else {
+                        done(null, user)
+                    }
+                })
+            }
+        });
+    }
+));
+
+
+
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser())

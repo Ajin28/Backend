@@ -24,4 +24,4 @@ User.plugin(passportLocalMongoose);
 // So, this will automatically as I said adding support for username and hashed storage of the password using the hash and salt and adding additional methods on the user schema and the model which are useful for passport authentication.
 
 
-module.exports = mongoose.model('User', User);
+module.exports = mongoose.model('user', User);

@@ -155,10 +155,32 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
             return done(null, user);
         } else {
             return done(null, false);
+            // info object is filled automatically with appropriate info
             // or you could create a new account
         }
     });
 }));
+
+
+- Invalid Token
+```
+
+info: {
+"name": "JsonWebTokenError",
+"message": "invalid token"
+}
+
+```
+
+- Expired Token
+```
+
+info:{
+"name": "TokenExpiredError",
+"message": "jwt expired",
+"expiredAt": "2021-01-31T10:38:37.000Z"
+}
+
 ```
 
 ### Extracting the JWT from the request
@@ -177,14 +199,16 @@ A number of extractor factory functions are provided in passport-jwt.ExtractJwt.
 - custom extractor - If the supplied extractors don't meet your needs you can easily provide your own callback. For example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie you could use the following function as the argument to the jwtFromRequest option:
 
 ```
+
 var cookieExtractor = function(req) {
-    var token = null;
-    if (req && req.cookies)
-    {
-        token = req.cookies['jwt'];
-    }
-    return token;
+var token = null;
+if (req && req.cookies)
+{
+token = req.cookies['jwt'];
+}
+return token;
 };
+
 ```
 
 ### Authenticate requests
@@ -192,11 +216,13 @@ var cookieExtractor = function(req) {
 Use passport.authenticate() specifying 'JWT' as the strategy.
 
 ```
+
 app.post('/profile', passport.authenticate('jwt', { session: false }),
-    function(req, res) {
-        res.send(req.user.profile);
-    }
+function(req, res) {
+res.send(req.user.profile);
+}
 );
+
 ```
 
 ## Doubt 1- How is signature created??? Whats that HMAC?
@@ -206,6 +232,7 @@ HMAC stands for Keyed-Hashing for Message Authentication. It's a message authent
 HMACs are almost similar to digital signatures. They both enforce integrity and authenticity. They both use cryptographic keys. And they both employ hash functions. The main difference is that digital signatures use asymmetric keys, while HMACs use symmetric keys.
 
 ```
+
 Formula for HMAC:
 HMAC = hashFunc(secret key + message)
 
@@ -218,3 +245,4 @@ Symmetric key encryption is a type of encryption that makes use of a single key 
 ### Asymmetric key encryption
 
 Asymmetric key encryption, on the other hand, makes use of two keys. A private key and a public key. The public key is used for encrypting, while the private key is used for decrypting. Two of the most widely used asymmetric key algorithms are: RSA and DSA.
+```

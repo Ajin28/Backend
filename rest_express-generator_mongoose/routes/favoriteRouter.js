@@ -124,7 +124,7 @@ favRouter.route("/:dishId")
                                 .then((popfav) => {
                                     res.statusCode = 200;
                                     res.setHeader('Content-Type', 'application/json')
-                                    res.json(fav)
+                                    res.json(popfav)
                                 })
                         })
                         .catch(err => { next(err) })
@@ -137,7 +137,7 @@ favRouter.route("/:dishId")
                                 .then((popfav) => {
                                     res.statusCode = 200;
                                     res.setHeader('Content-Type', 'application/json')
-                                    res.json(fav)
+                                    res.json(popfav)
                                 })
                         })
                         .catch(err => { next(err) })
@@ -160,17 +160,19 @@ favRouter.route("/:dishId")
                     res.json("No favorite exists")
 
                 } else {
-                    fav.dishes.pull(req.params.dishId);
-                    fav.save()
-                        .then((fav) => {
-                            Favorite.findOne({ _id: fav._id }).populate('dishes').populate('user')
+                    var updatedArray = fav.dishes.pull(req.params.dishId)
+                    console.log(updatedArray);
+                    Favorite.findByIdAndUpdate({ _id: fav._id }, { dishes: updatedArray })
+                        .then((favorite) => {
+                            Favorite.findById({ _id: favorite._id }).populate('user').populate('dishes')
                                 .then((popfav) => {
                                     res.statusCode = 200;
                                     res.setHeader('Content-Type', 'application/json')
-                                    res.json(fav)
+                                    res.json(popfav);
                                 })
                         })
                         .catch(err => { next(err) })
+
 
                 }
             })

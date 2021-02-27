@@ -13,6 +13,7 @@ const favoriteSchema = new Schema({
 
             type: Schema.Types.ObjectId,
             ref: 'dish',
+            sparse: true
         }
     ]
 }, {

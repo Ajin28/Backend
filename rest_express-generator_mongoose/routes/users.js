@@ -106,7 +106,7 @@ userRouter.post('/login', cors.corsWithOptions, (req, res, next) => {
     }
 
     if (!user) {
-      res.statusCode = 401;
+      res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json')
       res.json({ success: false, status: "Login Unsuccessful", err: info })
     }
@@ -114,7 +114,7 @@ userRouter.post('/login', cors.corsWithOptions, (req, res, next) => {
     // populates req.user which otherwise remains undefined
     req.logIn(user, (err) => {
       if (err) {
-        res.statusCode = 401;
+        res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json')
         console.log("Error in req.login", err);
         res.json({ success: false, status: "Login Unsuccessful", err: 'Could not log in user' })
